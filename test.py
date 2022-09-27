@@ -1,5 +1,6 @@
 # Import module
 from tkinter import *
+from PIL import Image,ImageTk
 
 # Create object
 root = Tk()
@@ -8,7 +9,8 @@ root = Tk()
 root.geometry("400x400")
 
 # Add image file
-bg = open(file = "1.jpg")
+img=Image.open("4.jpg")
+bg =ImageTk.PhotoImage(img)
 
 # Show image using label
 label1 = Label( root, image = bg)

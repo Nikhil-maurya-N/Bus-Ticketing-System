@@ -1,8 +1,9 @@
+import cv2
 import qrcode
 from tkinter import *
 from tkinter import messagebox
 import tkinter.messagebox as tmsg
-from PIL import Image
+from PIL import Image,ImageTk
 
 
 # functions
@@ -11,10 +12,13 @@ root=Tk()
 root.title("Bus Ticketing system By Nikhil Maurya")
 root.geometry("1366x768")
 
-img1=Image("1.jpg")
-lab=Label(root,image=img1)
-lab.place(x=0,y=0)
-# root.config(bg=img1)
+img=Image.open("4.jpg")
+bg =ImageTk.PhotoImage(img)
+
+# Show image using label
+label1 = Label( root, image = bg)
+label1.place(x = 0, y = 0)
+
 
 def Register():
     user_qrcode=qrcode.make(str(var5.get())+"@"+str(var1.get()))
@@ -30,14 +34,24 @@ var4=StringVar()
 var5=StringVar()
 var6=StringVar()
 def New_passenger():
-    f1=Frame(root,bg="light gray",height=600,width=580,relief=GROOVE,border=10)
+    f1=Frame(root,height=600,width=580,relief=FLAT,border=5)
     f1.place(x=400,y=50)
+
+    img1=Image.open("1.jpg")
+    bg1 =ImageTk.PhotoImage(img1)
+
+    # Show image using label
+    label1 = Label( f1, image = bg1)
+    label1.image=bg1
+    label1.place(x = 0, y = 0)
+
+    
 
     l1=Label(f1,text="New Passenger Registration",font=("Lato",25),bg="light gray")
     l1.place(x=80,y=20)
 
     cross=Button(f1,text="X",command=f1.destroy)
-    cross.place(x=540,y=1)
+    cross.place(x=550,y=1)
 
     l2=Label(f1,text="Name",font=("Lato",15),bg="light gray")
     l2.place(x=110,y=120)
@@ -89,7 +103,9 @@ def Contact():
     Linkedin : https://www.linkedin.com/in/nikhil-maurya-13535320b
     Instagram : https://instagram.com/a_n_on_y_m_o_us_?igshid=YmMyMTA2M2Y=
     ''')
-def Recharge():
+def log_in():
+    # pass
+
     var6=StringVar()
     var7=StringVar()
 
@@ -114,6 +130,62 @@ def Recharge():
 
     b2=Button(f2,text="Log in",font=("Leto",13),command=log_in)
     b2.place(x=170,y=250)
+    return check_validity(var6.get(),var7.get())
+
+def check_validity():
+    pass
+
+def Recharge():
+    pass
+def entry():
+    cap = cv2.VideoCapture(0)
+    # initialize the cv2 QRCode detector
+    detector = cv2.QRCodeDetector()
+    while True:
+        _, img = cap.read()
+        # detect and decode
+        data, bbox, _ = detector.detectAndDecode(img)
+        # check if there is a QRCode in the image
+        if data:
+            a=data
+            break
+        # display the result
+        cv2.imshow("QRCODEscanner", img)    
+        if cv2.waitKey(1) == ord("q"):
+            break
+
+    # b=webbrowser.open(str(a))
+    savedata(data)
+    cap.release()
+    cv2.destroyAllWindows()
+
+def exit():
+    cap = cv2.VideoCapture(0)
+    # initialize the cv2 QRCode detector
+    detector = cv2.QRCodeDetector()
+    while True:
+        _, img = cap.read()
+        # detect and decode
+        data, bbox, _ = detector.detectAndDecode(img)
+        # check if there is a QRCode in the image
+        if data:
+            a=data
+            break
+        # display the result
+        cv2.imshow("QRCODEscanner", img)    
+        if cv2.waitKey(1) == ord("q"):
+            break
+
+    # b=webbrowser.open(str(a))
+    calculate(data)
+    cap.release()
+    cv2.destroyAllWindows()
+
+def savedata():
+    pass
+
+def calculate():
+    pass
 
 def log_in():
     pass
@@ -123,17 +195,6 @@ def Exit():
     exit()
 mainmenu=Menu(root)
 
-# declartion of first menu named as m1(file)
-# m1=Menu(mainmenu,tearoff=0)
-# mainmenu.add_cascade(label="Passenger Adminitration",font=("BOLD",30),menu=m1,)
-# m1.add_command(label="New Passenger...",font=("BOLD",15),command=New_passenger)
-# m1.add_command(label="Recharge",font=("BOLD",15),command=Recharge)
-# m1.add_command(label="About",font=("BOLD",15),command=About)
-# m1.add_command(label="Contact Us",font=("BOLD",15),command=Contact)
-# m1.add_command(label="De-Activation",font=("BOLD",15),command=None)
-# m1.add_command(label="Exit",font=("BOLD",15),command=Exit)
-
-# root.config(menu=mainmenu)
 
 mainmenu=Menu(root)
 mainmenu.add_command(label="New Passenger...",font=("BOLD",15),command=New_passenger)
@@ -146,7 +207,7 @@ root.config(menu=mainmenu)
 
 
 
-Entry_Button=Button(text="Scan For Entry",font=("brandon Grotesque",20) )
+Entry_Button=Button(text="Scan For Entry",font=("brandon Grotesque",20),command=entry)
 Entry_Button.place(x=300,y=200)
 
 Exit_Button=Button(text="Scan For Entry",font=("brandon Grotesque",20) )
