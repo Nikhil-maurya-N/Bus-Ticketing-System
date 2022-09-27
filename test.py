@@ -8,7 +8,7 @@ root = Tk()
 root.geometry("400x400")
 
 # Add image file
-bg = PhotoImage(file = "1.jpg")
+bg = open(file = "1.jpg")
 
 # Show image using label
 label1 = Label( root, image = bg)
