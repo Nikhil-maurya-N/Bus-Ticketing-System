@@ -16,7 +16,7 @@ img=Image.open("4.jpg")
 bg =ImageTk.PhotoImage(img)
 
 # Show image using label
-label1 = Label( root, image = bg,padx=fill,pady=fill)
+label1 = Label( root, image = bg,)
 label1.place(x = 0, y = 0)
 
 var1=StringVar()
@@ -133,15 +133,20 @@ def login():
     c1=Checkbutton(f2,text="Ha Hm insaan h",bg="light gray")
     c1.place(x=120,y=200)
 
-    b2=Button(f2,text="Log in",font=("Leto",13),command=log_in)
+    b2=Button(f2,text="Log in",font=("Leto",13),command=login)
     b2.place(x=170,y=250)
     return check_validity(var7.get(),var8.get())
 
 def check_validity(check_var1,check_var2):
-    pass
+    return 0
 
 def Recharge():
-    pass
+    if login():
+        pass
+    else:
+        msg=tmsg.showerror("Login error","Invalid credentials!\nPlz try again with valid username and password")
+
+
 def entry_bus():
     cap = cv2.VideoCapture(0)
     # initialize the cv2 QRCode detector
@@ -191,11 +196,6 @@ def savedata():
 
 def calculate():
     pass
-
-def log_in():
-    pass
-
-
 def Exit():
     exit()
 # menus
