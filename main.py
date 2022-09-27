@@ -1,3 +1,4 @@
+from textwrap import fill
 import cv2
 import qrcode
 from tkinter import *
@@ -6,7 +7,6 @@ import tkinter.messagebox as tmsg
 from PIL import Image,ImageTk
 
 
-# functions
 
 root=Tk()
 root.title("Bus Ticketing system By Nikhil Maurya")
@@ -16,16 +16,8 @@ img=Image.open("4.jpg")
 bg =ImageTk.PhotoImage(img)
 
 # Show image using label
-label1 = Label( root, image = bg)
+label1 = Label( root, image = bg,padx=fill,pady=fill)
 label1.place(x = 0, y = 0)
-
-
-def Register():
-    user_qrcode=qrcode.make(str(var5.get())+"@"+str(var1.get()))
-    user_qrcode.save(str(var1.get())+"qrcode.png")
-    msg=tmsg.showinfo()
-    img2 = Image. open(str(var1.get())+"qrcode.png")
-    img2. show()
 
 var1=StringVar()
 var2=StringVar()
@@ -33,6 +25,19 @@ var3=StringVar()
 var4=StringVar()
 var5=StringVar()
 var6=StringVar()
+
+# functions
+def Register():
+    user_qrcode=qrcode.make(str(var5.get())+"@"+str(var1.get()))
+    user_qrcode.save(str(var1.get())+"qrcode.png")
+    msg=tmsg.showinfo()
+    img2 = Image. open(str(var1.get())+"qrcode.png")
+    submit(var1.get(),var2.get(),var3.get(),var4.get(),var5.get(),var6.get())
+    img2. show()
+
+def submit(name,gender,mobile_no,email,addhar,password):
+    pass
+
 def New_passenger():
     f1=Frame(root,height=600,width=580,relief=FLAT,border=5)
     f1.place(x=400,y=50)
@@ -103,11 +108,11 @@ def Contact():
     Linkedin : https://www.linkedin.com/in/nikhil-maurya-13535320b
     Instagram : https://instagram.com/a_n_on_y_m_o_us_?igshid=YmMyMTA2M2Y=
     ''')
-def log_in():
+def login():
     # pass
 
-    var6=StringVar()
     var7=StringVar()
+    var8=StringVar()
 
     f2=Frame(root,bg="light gray",height=400,width=380,relief=GROOVE,border=10)
     f2.place(x=400,y=50)
@@ -115,14 +120,14 @@ def log_in():
     l_1=Label(f2,text="Passenger Recharge Interface ",font=("Lato",17),bg="light gray")
     l_1.place(x=30,y=30)
 
-    l_2=Label(f2,text="Email",font=("Lato",13),bg="light gray")
+    l_2=Label(f2,text="Addhar No",font=("Lato",13),bg="light gray")
     l_2.place(x=50,y=100)
-    E_2=Entry(f2,textvariable=var6,font=("Lato",13))
+    E_2=Entry(f2,textvariable=var7,font=("Lato",13))
     E_2.place(x=140,y=100)
 
     l_3=Label(f2,text="Passward",font=("Lato",13),bg="light gray")
     l_3.place(x=50,y=150)
-    E_4=Entry(f2,textvariable=var7,font=("Lato",13,))
+    E_4=Entry(f2,textvariable=var8,font=("Lato",13,))
     E_4.place(x=140,y=150)
 
     c1=Checkbutton(f2,text="Ha Hm insaan h",bg="light gray")
@@ -130,14 +135,14 @@ def log_in():
 
     b2=Button(f2,text="Log in",font=("Leto",13),command=log_in)
     b2.place(x=170,y=250)
-    return check_validity(var6.get(),var7.get())
+    return check_validity(var7.get(),var8.get())
 
-def check_validity():
+def check_validity(check_var1,check_var2):
     pass
 
 def Recharge():
     pass
-def entry():
+def entry_bus():
     cap = cv2.VideoCapture(0)
     # initialize the cv2 QRCode detector
     detector = cv2.QRCodeDetector()
@@ -159,7 +164,7 @@ def entry():
     cap.release()
     cv2.destroyAllWindows()
 
-def exit():
+def exit_bus():
     cap = cv2.VideoCapture(0)
     # initialize the cv2 QRCode detector
     detector = cv2.QRCodeDetector()
@@ -193,9 +198,7 @@ def log_in():
 
 def Exit():
     exit()
-mainmenu=Menu(root)
-
-
+# menus
 mainmenu=Menu(root)
 mainmenu.add_command(label="New Passenger...",font=("BOLD",15),command=New_passenger)
 mainmenu.add_command(label="Recharge",font=("BOLD",15),command=Recharge)
@@ -206,11 +209,11 @@ mainmenu.add_command(label="Exit",font=("BOLD",15),command=Exit)
 root.config(menu=mainmenu)
 
 
-
-Entry_Button=Button(text="Scan For Entry",font=("brandon Grotesque",20),command=entry)
+# Button for entry and exit
+Entry_Button=Button(text="Scan For Entry",font=("brandon Grotesque",20),command=entry_bus)
 Entry_Button.place(x=300,y=200)
 
-Exit_Button=Button(text="Scan For Entry",font=("brandon Grotesque",20) )
+Exit_Button=Button(text="Scan For Exit",font=("brandon Grotesque",20),command=exit_bus )
 Exit_Button.place(x=800,y=200)
 
 
