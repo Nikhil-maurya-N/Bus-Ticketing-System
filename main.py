@@ -30,7 +30,7 @@ var6=StringVar()
 def Register():
     user_qrcode=qrcode.make(str(var5.get())+"@"+str(var1.get()))
     user_qrcode.save(str(var1.get())+"qrcode.png")
-    msg=tmsg.showinfo()
+    msg=tmsg.showinfo("Image Creation",f"{var1.get()}, you Have succesfull registered to E- Bus Here is your scanner ")
     img2 = Image. open(str(var1.get())+"qrcode.png")
     submit(var1.get(),var2.get(),var3.get(),var4.get(),var5.get(),var6.get())
     img2. show()
@@ -52,7 +52,7 @@ def New_passenger():
 
     
 
-    l1=Label(f1,text="New Passenger Registration",font=("Lato",25),bg="light gray")
+    l1=Label(f1,text="New Passenger Registration",font=("Lato",25),bg=None)
     l1.place(x=80,y=20)
 
     cross=Button(f1,text="X",command=f1.destroy)
@@ -67,7 +67,7 @@ def New_passenger():
 
     l3=Label(f1,text="Gender",font=("Lato",15),bg="light gray")
     l3.place(x=110,y=180)
-    E3=Radiobutton(f1,text="Male",value=1,variable=var3,bg="lightGray")
+    E3=Radiobutton(f1,text="Male",value=1,variable=var3,bg="lightGray",)
     E3.place(x=220,y=180)
     E3=Radiobutton(f1,text="female",value=2,variable=var3,bg="lightGray")
     E3.place(x=280,y=180)
@@ -101,7 +101,7 @@ def New_passenger():
 def About():
     msg=tmsg.showinfo("About",''' This is an prototype for solving an real tym problem as discussed in Project portfolio that is we are going to sort problem of E-bus ticketing as we are in hurry so we had overcome the problem of paper ticketing we issue an QR code in whhich the  details of pasenger are encoded and entire process of ticketing done within few seconds ''')
 def Contact():
-    msg=tmsg.showinfo("Contact Details", '''Contact us at : \n
+    msg=tmsg.Bshowinfo("Contact Details", '''Contact us at : \n
 
     Gmail : nikhil020105@gmail.com
     github : https://github.com/Nikhil-maurya-N
