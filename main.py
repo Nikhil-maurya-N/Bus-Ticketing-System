@@ -5,6 +5,7 @@ from tkinter import messagebox
 import tkinter.messagebox as tmsg
 from PIL import Image, ImageTk
 import mysql.connector
+import datetime
 
 
 class problem:
@@ -51,18 +52,19 @@ class problem:
 
 # functions
     def Register(self):
-        self.user_qrcode = qrcode.make(
-            str(self.var5.get())+"@"+str(self.var1.get()))
-        self.user_qrcode.save(str(self.var1.get())+"qrcode.png")
+        string=str(self.var1.get()+self.var5.get())
+        string=string.replace(" ","")
+        self.user_qrcode = qrcode.make(string)
+        self.user_qrcode.save(string+"qrcode.png")
         msg = tmsg.showinfo(
             "Image Creation", f"{self.var1.get()}, you Have succesfull registered to E- Bus Here is your scanner ")
-        img2 = Image. open(str(self.var1.get())+"qrcode.png")
+        img2 = Image. open(string+"qrcode.png")
         img2. show()
-        self.submitTODB()
+        self.submitTODB(string)
         self.f1.destroy()
 
 
-    def submitTODB(self):
+    def submitTODB(self,string):
         # print("Hello1")
         
         # print(QueryID)
@@ -79,8 +81,8 @@ class problem:
         sql="insert into personal (name, Gender, Mobile_no, Email, Addhar, passward ) values('{}','{}','{}','{}','{}','{}')".format(self.var1.get(),gender,self.var3.get(),self.var4.get(),self.var5.get(),self.var6.get())
         self.pointer.execute(sql)
         # mydb.commit()
-        query="create table {}(board_time date , departure_time date ,amount_difference float,statement text(100),total_balance float)".format(self.var1.get()+self.var5.get())
-        print(query)
+        query="create table {}(TransitionId int not null auto_increment,board_time datetime, departure_time datetime ,amount_difference float,statement text(100),total_balance float,primary key (TransitionId))".format(string)
+        # print(query)
         self.pointer.execute(query)
         self.mydb.commit()
         # D=pointer.fetchone()
@@ -176,6 +178,7 @@ class problem:
 
         self.var7 = StringVar()
         self.var8 = StringVar()
+        self.checkvar=IntVar()
 
         self.f2 = Frame(self.root, bg="light gray", height=400,
                 width=380, relief=GROOVE, border=10)
@@ -205,12 +208,13 @@ class problem:
         b2 = Button(self.f2, text="Log in", font=("Leto", 13), command=self.check_validity)
         b2.place(x=170, y=300)
         cross=Button(self.f2,text="X",font=("Leto", 13), command=self.f2.destroy)
-        cross.place(x=350,y=1)
+        cross.place(x=335,y=1)
         # print("hello1")
         # print(self.flag)
         # return self.flag
         # self.f2.destroy()
         # return self.flag
+    
     def callback1(self,input): 
         if ('@'in input and '.com'in input) or input=="": 
             return True
@@ -228,14 +232,25 @@ class problem:
         
     def callback2(self,P):
         # print("yes")
-        if P.isdigit() or '.' in P or P=="":
+        if self.validatefloat(P) or P=="":
             return True
         else:
-            tmsg.showerror("Invalid input!","Please Enter only numeric values  and '.'\ni.e.(0-9)")
+            tmsg.showerror("Invalid input!","Please Enter only numeric values  and single '.'\ni.e.(0-9)")
             return False
+    def validatefloat(self,P):
+        X=P
+        i=X.find('.')
+        X=X[:i]+X[i+1:]
+        if X.isdigit():
+            return True
+        else:
+            return False
+
     def check_validity(self):
-        
-            
+        # print(self.c1.state())
+        if self.checkvar==1:
+            tmsg.showwarning("Humanity check ","Are Are! Insaan ni ho ka be tick kro :)")
+            return
         sqlQuery="select passward from personal where Addhar='{}'".format(self.var7.get())
         self.pointer.execute(sqlQuery)
         LoginCredential=self.pointer.fetchone()
@@ -251,6 +266,7 @@ class problem:
                 # print("logged in")
                 msg = tmsg.showinfo(
                     "logged In", "Successfully Logged In")
+                self.Recharge()
             else:
                 msg = tmsg.showerror(
                     "Login error", "Invalid credentials!\nPlz try again  password")
@@ -259,22 +275,21 @@ class problem:
         except :
             msg = tmsg.showerror(
                 "Login error", "Invalid credentials!\nPlz try again  with valid Addhar!")
-        self.Recharge()
             # return self.flag
         # return
         # pass
 
     def Recharge(self):
-        query="Select total_balance from personal where addhar={}".format(self.var7.get())
+        query="Select total_balance from personal where Addhar={}".format(self.var7.get())
         self.pointer.execute(query)
         balance=self.pointer.fetchone()
         balance=str(balance[0])
+        # print(balance)
 
         self.var9=StringVar()
 
-        self.f3 = Frame(self.root, height=400,bg="light gray" ,width=580, relief=FLAT, border=5)
+        self.f3 = Frame(self.root, height=400,bg="light gray" ,width=580, relief=GROOVE, border=5)
         self.f3.place(x=400, y=50)
-        vcmd=(self.f3.register(self.callback2))
 
 
         cross = Button(self.f3, text="X", command=self.f3.destroy)
@@ -290,15 +305,38 @@ class problem:
         
         l3 = Label(self.f3, text="Enter Amount To add :", font=("Lato", 15), bg="light gray")
         l3.place(x=120, y=170)
-        E3 = Entry(self.f3, textvariable=self.var9, validate="key",validatecommand=(vcmd,"%P"),font=("Lato", 15))
+        E3 = Entry(self.f3, textvariable=self.var9, font=("Lato", 15))
         E3.place(x=120, y=220)
         
-        b2 = Button(self.f3, text="deposit", font=("Leto", 13),relief=RIDGE, command=self.increase_money)
+        b2 = Button(self.f3, text="deposit", font=("Leto", 13),relief=RIDGE, command=lambda  : self.increase_money(balance))
         b2.place(x=220, y=320)
 
-    def increase_money(self):
-
-        pass    
+    def increase_money(self,balance):
+        balance=float(balance)
+        # print(balance)
+        if  not self.callback2(self.var9.get()):
+            return
+        total=float(self.var9.get())+balance
+        # print(total)
+        query="update personal set total_balance ='{}' where Addhar={}".format(total,self.var7.get())
+        # print(query)
+        self.pointer.execute(query)
+        self.mydb.commit()        
+        query="select name from personal where Addhar={}".format(self.var7.get())
+        # print(query)
+        self.pointer.execute(query)
+        name=self.pointer.fetchone()
+        name=name[0]
+        name=name.replace(" ","")
+        tableName=name+self.var7.get()
+        query="insert into {}(board_time,amount_difference,statement,total_balance) values( '{}','{}','{}','{}') ".format(tableName,datetime.datetime.now(),self.var9.get(),"Recharged via client portal",total)
+        # print(query)
+        self.pointer.execute(query)
+        self.mydb.commit()
+        self.f3.destroy()
+        tmsg.showinfo("Transaction successfull","You have successfully recharged with the amount : "+str(self.var9.get()))
+        # print(self.var9.get())
+        # pass    
 
     def entry_bus(self):
         cap = cv2.VideoCapture(0)
@@ -318,9 +356,9 @@ class problem:
                 break
 
         # b=webbrowser.open(str(a))
-        self.savedata(data)
         cap.release()
         cv2.destroyAllWindows()
+        self.savedata(data)
 
 
     def exit_bus(self):
@@ -341,16 +379,20 @@ class problem:
                 break
 
         # b=webbrowser.open(str(a))
-        self.calculate(data)
         cap.release()
         cv2.destroyAllWindows()
+        self.calculate(data)
 
 
-    def savedata(self):
-        pass
+    def savedata(self,data):
+        query="insert into {}(board_time) value('{}')".format(data,datetime.datetime.now())
+        self.pointer.execute(query)
+        self.mydb.commit()
+        # pass
 
 
-    def calculate(self):
+    def calculate(self,data):
+       
         pass
 
 
