@@ -215,11 +215,11 @@ class problem:
         b1.place(x=260, y=480)
 
 
-    def About():
+    def About(self):
         msg = tmsg.showinfo("About", ''' This is an prototype for solving an real tym problem as discussed in Project portfolio that is we are going to sort problem of E-bus ticketing as we are in hurry so we had overcome the problem of paper ticketing we issue an QR code in whhich the  details of pasenger are encoded and entire process of ticketing done within few seconds ''')
 
 
-    def Contact():
+    def Contact(self):
         msg = tmsg.Bshowinfo("Contact Details", '''Contact us at : \n
 
         Gmail : nikhil020105@gmail.com
