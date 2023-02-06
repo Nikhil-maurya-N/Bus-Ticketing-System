@@ -45,7 +45,7 @@ class problem:
         Exit_Button.place(x=800, y=200)
 
 
-        self.getPassward("ikhil")
+        self.getPassward("nikhil")
         
         
         self.root.mainloop()
@@ -128,9 +128,9 @@ class problem:
         gender=str()
         # print(type(self.var2.get()))
         variable=int(self.var2.get())
-        if variable==0:
+        if variable==1:
             gender="male"
-        elif variable==1:
+        elif variable==2:
             gender="female"
         else:
             gender="Not to specify"
@@ -149,7 +149,7 @@ class problem:
     def New_passenger(self):
 
         self.var1=StringVar()
-        self.var2=StringVar()
+        self.var2=IntVar()
         self.var3=StringVar()
         self.var4=StringVar()
         self.var5=StringVar()
@@ -183,12 +183,12 @@ class problem:
 
         l3 = Label(self.f1, text="Gender", font=("Lato", 15), bg="light gray")
         l3.place(x=110, y=180)
-        E3 = Radiobutton(self.f1, text="Male", value=0, variable=self.var2, bg="lightGray")
+
+        E3 = Radiobutton(self.f1, text="Male", value=1, variable=self.var2, bg="lightGray")
         E3.place(x=220, y=180)
-        E3 = Radiobutton(self.f1, text="female", value=1, variable=self.var2, bg="lightGray")
+        E3 = Radiobutton(self.f1, text="female", value=2, variable=self.var2, bg="lightGray")
         E3.place(x=280, y=180)
-        E3 = Radiobutton(self.f1, text="Not to Specify", value=2,
-                        variable=self.var2, bg="lightGray")
+        E3 = Radiobutton(self.f1, text="Not to Specify", value=3, variable=self.var2, bg="lightGray")
         E3.place(x=350, y=180)
 
         l4 = Label(self.f1, text="Mobile NO.", font=("Lato", 15), bg="light gray")
