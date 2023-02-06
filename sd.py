@@ -66,6 +66,7 @@ from tkinter import messagebox
 import tkinter.messagebox as tmsg
 from PIL import Image, ImageTk
 import mysql.connector
+import datetime
 
 # def check_validity():
 #     return 69
@@ -78,6 +79,9 @@ mydb=mysql.connector.connect(host='localhost',user='root',password='nikhil',data
 pointer=mydb.cursor()
 # query="create table {}(board_time date set default getdate(), departure_time date set default getdate(),amount_difference float,statement text(100),total_balance float)".format("kddu")
 # pointer.execute(query)
-query="update personal set  total_balance ='{}' where Addhar='{}'".format(23,'098765432112')
+# query="update personal set  total_balance ='{}' where Addhar='{}'".format(23,'098765432112')
+
+query="update {} set departure_time={}, set amount_difference={}, set statement={},set total_balance={}".format("nikhil303343108922",datetime.datetime.now(),'78',"money deduced for Travel cost",'78')
+print(query)
 pointer.execute(query)
 mydb.commit()

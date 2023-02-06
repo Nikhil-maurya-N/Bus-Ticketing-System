@@ -385,17 +385,77 @@ class problem:
 
 
     def savedata(self,data):
+        # data="Nikhil kjas 303343108922"
+        temp=str()
+        for i in data:
+            if i.isalpha() or i==" ":
+                temp+=i
+        addhar=data.replace(temp,"")
+        query="select state from personal where Addhar={}".format(addhar)
+        self.pointer.execute(query)
+        state=self.pointer.fetchone()[0]
+        # print(query)
+        # print(state)
+        if state==1:
+            tmsg.showwarning("invalid entry","It seems like you have already have an departure pending please firstly depart from bus")
+            return
         query="insert into {}(board_time) value('{}')".format(data,datetime.datetime.now())
         self.pointer.execute(query)
+        
+        query="update personal set state=1 where Addhar={}".format(addhar)
+        self.pointer.execute(query)
         self.mydb.commit()
+        # print("Yes")
         # pass
 
 
     def calculate(self,data):
-       
-        pass
+        temp=str()
+        for i in data:
+            if i.isalpha() or i==" ":
+                temp+=i
+        addhar=data.replace(temp,"")
+        query="select state from personal where Addhar={}".format(addhar)
+        self.pointer.execute(query)
+        state=self.pointer.fetchone()[0]
+        if state==0:
+            tmsg.showerror("Invalid departure ","It seems like you did not boarded before please board first then do departure!")
+            return
+        query="select max(transitionID) from {}".format(data)
+        self.pointer.execute(query)
+        transId=self.pointer.fetchone()[0]
+        depTime=datetime.datetime.now()
+        query="select board_time from {} where TransitionId={}".format(data,transId)
+        # print(query)
+        self.pointer.execute(query)
 
+        boardTime=self.pointer.fetchone()[0]
 
+        timeINMin,moneydifference=self.moneyCal(boardTime,depTime)
+        tmsg.showinfo("Departured successfull","Dear custumer you traveled {} which costs you : {}".format(timeINMin,moneydifference))
+        
+        query="select total_balance from personal where Addhar={}".format(addhar)
+        self.pointer.execute(query)
+        totalBalance=self.pointer.fetchone()[0]
+        totalBalance-=moneydifference
+        # print(totalBalance)
+        query="update {} set departure_time='{}', amount_difference={}, statement='{}',total_balance={} where TransitionId={}".format(data,depTime,moneydifference,"money deduced for Travel cost",totalBalance,transId)
+        # print(query)
+        self.pointer.execute(query)
+        query="update personal set total_balance ={}, state=0 where Addhar={}".format(totalBalance,addhar)
+        # print(query)
+        self.pointer.execute(query)
+
+        self.mydb.commit()
+        # self.mydb.commit()
+        # pass
+
+    def moneyCal(self,boardTime,depTime):
+        boardTime=int(round(boardTime.timestamp()))
+        depTime=int(round(depTime.timestamp()))
+        totalTime=depTime-boardTime
+        timeINMin= str(datetime.timedelta(seconds=totalTime))
+        return timeINMin,totalTime* 1.0/60.0
     def Exit():
         exit()
 
