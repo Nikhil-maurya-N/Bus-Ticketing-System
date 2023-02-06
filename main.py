@@ -12,8 +12,7 @@ class problem:
 
     def __init__(self):
         self.flag=None
-        self.mydb=mysql.connector.connect(host='localhost',user='root',password='nikhil',database='passenger_details')
-        self.pointer=self.mydb.cursor()
+        
         self.root = Tk()
         self.root.title("Bus Ticketing system By Nikhil Maurya")
         self.root.geometry("1366x768")
@@ -46,9 +45,66 @@ class problem:
         Exit_Button.place(x=800, y=200)
 
 
+        self.getPassward("ikhil")
+        
+        
         self.root.mainloop()
 
        
+    def getPassward(self,passk):
+        try:
+            self.mydb=mysql.connector.connect(host='localhost',user='root',password=passk)
+            tmsg.showinfo("Logged In","Successfully logged in to your sql")
+
+            self.pointer=self.mydb.cursor()
+            self.pointer.execute("use passenger_details")
+            # print("yes")
+            # self.pointer.execute("show databases")
+            # s=('passenger_details',)
+            # if s not in self.pointer:
+            #     self.pointer.execute("create database passenger_details")
+            #     queryTocreateBaseTable='''create table personal(
+            #                             name varchar(20),
+            #                             Gender varchar(20),
+            #                             Mobile_no varchar(10),
+            #                             Email varchar(50),
+            #                             Addhar varchar(15)not null,
+            #                             passward varchar(15),
+            #                             state boolean,
+            #                             total_balance float,
+            #                             primary key(addhar)
+            #                             )'''
+            #     self.pointer.execute(queryTocreateBaseTable)
+            #     self.mydb.commit()
+            #     tmsg.showinfo("database created","Successfull created 'personal' table in 'passenger_details'")
+            # self.pointer.execute("use passenger_details")
+        except mysql.connector.errors.ProgrammingError:
+            # print("yes")
+            tmsg.showerror("Unable to connect database","It seems like the passward : '{}' is not right to login to your database!".format(passk))
+            self.passward=StringVar()
+
+            self.frame = Frame(self.root, bg="light gray", height=200,
+                    width=380, relief=GROOVE, border=10)
+            self.frame.place(x=400, y=50)
+
+            l_1 = Label(self.frame, text="Enter Your root passward",
+                        font=("Lato", 17), bg="light gray")
+            l_1.place(x=30, y=30)
+
+            E_2 = Entry(self.frame, textvariable=self.passward, font=("Lato", 13))
+            E_2.place(x=100, y=80)
+
+            # cross=Button(self.frame,text="X",font=("Leto", 13), command=self.frame.destroy)
+            # cross.place(x=335,y=1)
+
+            b2 = Button(self.frame, text="Log in", font=("Leto", 13), command=self.passward_sender)
+            b2.place(x=170, y=130)
+
+    def passward_sender(self):
+        self.frame.destroy()
+        self.getPassward(self.passward.get())
+        
+
 
 # functions
     def Register(self):
@@ -460,4 +516,3 @@ class problem:
         exit()
 
 mainwindow= problem()
-    

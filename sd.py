@@ -75,13 +75,26 @@ import datetime
 # b2.place(x=170, y=300)
 # print(b2)
 # root.mainloop()
-mydb=mysql.connector.connect(host='localhost',user='root',password='nikhil',database='passenger_details')
-pointer=mydb.cursor()
 # query="create table {}(board_time date set default getdate(), departure_time date set default getdate(),amount_difference float,statement text(100),total_balance float)".format("kddu")
 # pointer.execute(query)
 # query="update personal set  total_balance ='{}' where Addhar='{}'".format(23,'098765432112')
-
-query="update {} set departure_time={}, set amount_difference={}, set statement={},set total_balance={}".format("nikhil303343108922",datetime.datetime.now(),'78',"money deduced for Travel cost",'78')
-print(query)
-pointer.execute(query)
-mydb.commit()
+# query="update {} set departure_time={}, set amount_difference={}, set statement={},set total_balance={}".format("nikhil303343108922",datetime.datetime.now(),'78',"money deduced for Travel cost",'78')
+try:
+    mydb=mysql.connector.connect(host='localhost',user='root',password='ikhil')
+    pointer=mydb.cursor()
+except mysql.connector.errors.ProgrammingError:
+    print("yes")
+    
+# print(query)
+# u=list(pointer)
+# print(u)
+pointer.execute("show databases")
+s=('passenger_details',)
+if s in pointer:
+    print("yes")
+# print(type(pointer))
+else:
+    print("NO")
+# for s in pointer:
+#     print(s)
+# mydb.commit()
