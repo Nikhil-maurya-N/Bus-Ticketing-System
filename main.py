@@ -6,6 +6,8 @@ import tkinter.messagebox as tmsg
 from PIL import Image, ImageTk
 import mysql.connector
 import datetime
+import webbrowser
+
 
 
 class problem:
@@ -27,10 +29,10 @@ class problem:
     # menus
         mainmenu = Menu(self.root)
         mainmenu.add_command(label="New Passenger...", font=("BOLD", 15), command=self.New_passenger)
-        mainmenu.add_command(label="Recharge", font=("BOLD", 15), command=self.login)
+        mainmenu.add_command(label="Recharge", font=("BOLD", 15), command=lambda : self.login(1))
         mainmenu.add_command(label="About", font=("BOLD", 15), command=self.About)
         mainmenu.add_command(label="Contact Us", font=("BOLD", 15), command=self.Contact)
-        mainmenu.add_command(label="De-Activation", font=("BOLD", 15), command=None)
+        mainmenu.add_command(label="De-Activation", font=("BOLD", 15), command=lambda : self.login(2))
         mainmenu.add_command(label="Exit", font=("BOLD", 15), command=self.Exit)
         self.root.config(menu=mainmenu)
 
@@ -50,7 +52,7 @@ class problem:
         
         self.root.mainloop()
 
-       
+    
     def getPassward(self,passk):
         try:
             self.mydb=mysql.connector.connect(host='localhost',user='root',password=passk)
@@ -298,18 +300,58 @@ class problem:
     def About(self):
         msg = tmsg.showinfo("About", ''' This is an prototype for solving an real tym problem as discussed in Project portfolio that is we are going to sort problem of E-bus ticketing as we are in hurry so we had overcome the problem of paper ticketing we issue an QR code in whhich the  details of pasenger are encoded and entire process of ticketing done within few seconds ''')
 
+    def openurl(self,url):
+        self.CWindow.destroy()
+        webbrowser.open_new_tab(url)
 
     def Contact(self):
-        msg = tmsg.Bshowinfo("Contact Details", '''Contact us at : \n
+        self.CWindow=Frame(self.root, bg="light gray", height=200,
+                width=550, relief=GROOVE, border=10)
+        self.CWindow.place(x=400, y=50)
+        Label(self.CWindow,text="Contact us at :",font=('Helveticabold', 10), bg="light gray").place(x=20,y=20)
+        # Label(text="Gmail : nikhil020105@gmail.com").place(x=50,y=50)
 
-        Gmail : nikhil020105@gmail.com
-        github : https://github.com/Nikhil-maurya-N
-        Linkedin : https://www.linkedin.com/in/nikhil-maurya-13535320b
-        Instagram : https://instagram.com/a_n_on_y_m_o_us_?igshid=YmMyMTA2M2Y=
-        ''')
+        link0 = Label(self.CWindow, text="Gmail : nikhil020105@gmail.com",font=('Helveticabold', 10), bg="light gray", fg="blue", cursor="hand2")
+        link0.place(x=30,y=50)
+        link0.bind("<Button-1>", lambda e: self.openurl("mailto:nikhil020105@gmail.com"))
+
+        link1 = Label(self.CWindow, text="github : https://github.com/Nikhil-maurya-N",font=('Helveticabold', 10), bg="light gray", fg="blue", cursor="hand2")
+        link1.place(x=30,y=80)
+        link1.bind("<Button-1>", lambda e: self.openurl("https://github.com/Nikhil-maurya-N"))
+        
+        link2 = Label(self.CWindow, text="Linkedin : https://www.linkedin.com/in/nikhil-maurya-13535320b", bg="light gray",font=('Helveticabold', 10), fg="blue", cursor="hand2")
+        link2.place(x=30,y=110)
+        link2.bind("<Button-1>", lambda e: self.openurl("https://www.linkedin.com/in/nikhil-maurya-13535320b"))
+        
+        link2 = Label(self.CWindow, text="Instagram : https://instagram.com/a_n_on_y_m_o_us_?igshid=YmMyMTA2M2Y=", bg="light gray",font=('Helveticabold', 10), fg="blue", cursor="hand2")
+        link2.place(x=30,y=140)
+        link2.bind("<Button-1>", lambda e: self.openurl("https://instagram.com/a_n_on_y_m_o_us_?igshid=YmMyMTA2M2Y="))
+
+        cross=Button(self.CWindow,text="X",font=("Leto", 13), command=self.CWindow.destroy)
+        cross.place(x=505,y=1)
 
 
-    def login(self):
+
+    def Deactivation(self):
+        askedVariable=tmsg.askyesno("Deletion confirmation ","Are You sure wanted to delete your data data permanentaly from our database?")
+        if askedVariable==False:
+            tmsg.showinfo("deactivation Message","Unsuccesfull deletion !! the data belonging to  {} Addhar due to your neglition".format(self.var7.get()))
+            return
+        query="select name from personal where Addhar={}".format(self.var7.get())
+        self.pointer.execute(query)
+        name=self.pointer.fetchone()[0]
+        name=name.replace(" ","")
+        tableName=name+self.var7.get()
+        query="delete from personal where Addhar={}".format(self.var7.get())
+        self.pointer.execute(query)
+        query="drop table {}".format(tableName)
+        self.pointer.execute(query)
+        self.mydb.commit()
+        
+        tmsg.showinfo("deactivation Message","Succcessfully deleted!! the data belonging to  {} Addhar as requested".format(self.var7.get()))
+        pass
+
+    def login(self,value):
         # pass
 
         self.var7 = StringVar()
@@ -341,7 +383,7 @@ class problem:
         c1 = Checkbutton(self.f2, text="Ha Hm insaan h", bg="light gray",variable=self.checkvar)
         c1.place(x=120, y=250)
 
-        b2 = Button(self.f2, text="Log in", font=("Leto", 13), command=self.check_validity)
+        b2 = Button(self.f2, text="Log in", font=("Leto", 13), command=lambda: self.check_validity(value))
         b2.place(x=170, y=300)
         cross=Button(self.f2,text="X",font=("Leto", 13), command=self.f2.destroy)
         cross.place(x=335,y=1)
@@ -381,8 +423,14 @@ class problem:
             return True
         else:
             return False
+    def check_validity(self,value):
+        if self.checkAll()==True:
+            if value==1:
+                self.Recharge()
+            elif value==2:
+                self.Deactivation()
 
-    def check_validity(self):
+    def checkAll(self):
         # print(self.checkvar.get())
         if self.checkvar.get()==0:
             tmsg.showwarning("Humanity check ","Are Are! Insaan ni ho ka be tick kro :)")
@@ -402,15 +450,16 @@ class problem:
                 # print("logged in")
                 msg = tmsg.showinfo(
                     "logged In", "Successfully Logged In")
-                self.Recharge()
+                return True
             else:
                 msg = tmsg.showerror(
                     "Login error", "Invalid credentials!\nPlz try again  password")
-
+                return False
                 # return self.flag
         except :
             msg = tmsg.showerror(
                 "Login error", "Invalid credentials!\nPlz try again  with valid Addhar!")
+            return False
             # return self.flag
         # return
         # pass
@@ -598,6 +647,4 @@ try:
     mainwindow= problem()
 except:
     tmsg.showinfo("Exit Pop up","You have explicitly exited the Mainwindow")
-    # print("exited successfully")
-    # exit()
     

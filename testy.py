@@ -224,32 +224,34 @@ from tkinter import messagebox
       
 # if char in " @#$%^&*(_-+?)":
 #     print("YEs")
-num=0
-low=0
-upp=0
-special=0
-print(num)
-for char in "self.varA.get()":
-   if char.isnumeric:
-         print(char)
-         num=1
-   if char.islower():
-         # print("l")
+# num=0
+# low=0
+# upp=0
+# special=0
+# print(num)
+# for char in "self.varA.get()":
+#    if char.isnumeric:
+#          print(char)
+#          num=1
+#    if char.islower():
+#          # print("l")
          
-         low=1
-   if char.isupper():
-         # print("u")
+#          low=1
+#    if char.isupper():
+#          # print("u")
          
-         upp=1
-   if char in " !@#$%^&*()_-+?":
-         # print("s")
+#          upp=1
+#    if char in " !@#$%^&*()_-+?":
+#          # print("s")
          
-         special=1
-print(num)
-print(low)
-print(upp)
-print(special)
-if num==0 or low==0 or upp==0 or special==0:
-   flag=1
-   tmsg.showerror("Invalid Addhar","there should be all the characters from the character set: {0-1}, {a-z}, {A-Z} and {! @#$%^&*()_-+}")
+#          special=1
+# print(num)
+# print(low)
+# print(upp)
+# print(special)
+# if num==0 or low==0 or upp==0 or special==0:
+   # flag=1
+   # tmsg.showerror("Invalid Addhar","there should be all the characters from the character set: {0-1}, {a-z}, {A-Z} and {! @#$%^&*()_-+}")
    # return True
+t=askedVariable=tmsg.askyesno("Deletion confirmation ","Are You sure wanted to delete your data data permanentaly from our database?")
+print(t)
