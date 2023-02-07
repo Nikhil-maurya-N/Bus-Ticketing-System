@@ -104,19 +104,94 @@ class problem:
         self.frame.destroy()
         self.getPassward(self.passward.get())
         
+    def entryValidation(self):
+        if self.var1.get()=="" or self.var2.get()=="" or self.var3.get()=="" or self.var4.get()=="" or self.var5.get()=="" or self.var6.get() =="":
+            tmsg.showerror("Fill the form","Please fill all the mandatory fields ")
+            return True
+        # else:
+        #     return False
+        flag=0
+        for char in self.var1.get():
+            # print(CHAR)
+            if char.isalpha() or char==" ":
 
+                pass
+            else:
+                flag=1
+                tmsg.showerror("Invalid name","there should not be any other characters other than alphabetic or space")
+                return True
+        
+        for char in self.var3.get():
+            if char.isdigit():
+                pass
+            else:
+                flag=1
+                tmsg.showerror("Invalid Mobile Number","there should be only numeric characters")
+                return True
+        if len(self.var3.get()) !=10:
+            flag=1
+            tmsg.showerror("Invalid Mobile Number  length","there should not be exact 10 digit in mobile number without +91 or preciding 0")
+            return True
+        if '@'in self.var4.get() and '.com'in self.var4.get() and " "not in self.var4.get(): 
+            pass
+        else:
+            flag=1
+            tmsg.showerror("Invalid Email","there should be @ and .com present in the valid email and no space should present")
+            return True
+        if len(self.var5.get()) !=12:
+            flag=1
+            tmsg.showerror("Invalid Addhar length  length","there should not be exact 12 digit in Addhar number ")
+            return True
+        for char in self.var5.get():
+            if char.isdigit():
+                pass
+            else:
+                flag=1
+                tmsg.showerror("Invalid Addhar","there should be only numeric characters")
+                return True
+        num=0
+        low=0
+        upp=0
+        special=0
+        for char in self.var6.get():
+            if char.isdigit():
+                num=1
+            if char.islower():
+                low=1
+            if char.isupper():
+                upp=1
+            if char in " !@#$%^&*()_-+?":
+                special=1
+        if num==0 or low==0 or upp==0 or special==0:
+            flag=1
+            tmsg.showerror("Invalid Addhar","there should be all the characters from the character set: {0-1}, {a-z}, {A-Z} and {! @#$%^&*()_-+}")
+            return True
+        if flag==0:
+            return False
+
+
+
+
+
+        # if checkname==0:
+        #     return False
+        
 
 # functions
     def Register(self):
+        
+        if  self.entryValidation():
+            return
         string=str(self.var1.get()+self.var5.get())
         string=string.replace(" ","")
         self.user_qrcode = qrcode.make(string)
         self.user_qrcode.save(string+"qrcode.png")
+        if self.submitTODB(string)==True:
+            return
         msg = tmsg.showinfo(
             "Image Creation", f"{self.var1.get()}, you Have succesfull registered to E- Bus Here is your scanner ")
         img2 = Image. open(string+"qrcode.png")
         img2. show()
-        self.submitTODB(string)
         self.f1.destroy()
 
 
@@ -135,7 +210,12 @@ class problem:
         else:
             gender="Not to specify"
         sql="insert into personal (name, Gender, Mobile_no, Email, Addhar, passward ) values('{}','{}','{}','{}','{}','{}')".format(self.var1.get(),gender,self.var3.get(),self.var4.get(),self.var5.get(),self.var6.get())
-        self.pointer.execute(sql)
+        try:
+            self.pointer.execute(sql)
+        except mysql.connector.errors.IntegrityError:
+            tmsg.showerror("User alread exists"," The user  with {} Addhar already exists in our database try with another addhar or login directly".format(self.var5.get()))
+            return True
+
         # mydb.commit()
         query="create table {}(TransitionId int not null auto_increment,board_time datetime, departure_time datetime ,amount_difference float,statement text(100),total_balance float,primary key (TransitionId))".format(string)
         # print(query)
@@ -206,7 +286,7 @@ class problem:
         E6 = Entry(self.f1,validate="key",validatecommand=(vcmd,"%P"), textvariable=self.var5, font=("Lato", 15))
         E6.place(x=220, y=360)
 
-        l6 = Label(self.f1, text="Passward", font=("Lato", 15), bg="light gray")
+        l6 = Label(self.f1, text="Password", font=("Lato", 15), bg="light gray")
         l6.place(x=110, y=420)
         E6 = Entry(self.f1, textvariable=self.var6, font=("Lato", 15))
         E6.place(x=220, y=420)
@@ -258,7 +338,7 @@ class problem:
 
         
 
-        c1 = Checkbutton(self.f2, text="Ha Hm insaan h", bg="light gray")
+        c1 = Checkbutton(self.f2, text="Ha Hm insaan h", bg="light gray",variable=self.checkvar)
         c1.place(x=120, y=250)
 
         b2 = Button(self.f2, text="Log in", font=("Leto", 13), command=self.check_validity)
@@ -272,10 +352,10 @@ class problem:
         # return self.flag
     
     def callback1(self,input): 
-        if ('@'in input and '.com'in input) or input=="": 
+        if ('@'in input and '.com'in input and " " not in input) or input=="": 
             return True
         else: 
-            tmsg.showerror("INvalid input","Must have an '@' and  '.com' present in a valid email")
+            tmsg.showerror("INvalid input","Must have an '@' and  '.com' present in a valid email and space should not be present")
             return False
         
     def callback(self,P):
@@ -303,8 +383,8 @@ class problem:
             return False
 
     def check_validity(self):
-        # print(self.c1.state())
-        if self.checkvar==1:
+        # print(self.checkvar.get())
+        if self.checkvar.get()==0:
             tmsg.showwarning("Humanity check ","Are Are! Insaan ni ho ka be tick kro :)")
             return
         sqlQuery="select passward from personal where Addhar='{}'".format(self.var7.get())
@@ -512,7 +592,12 @@ class problem:
         totalTime=depTime-boardTime
         timeINMin= str(datetime.timedelta(seconds=totalTime))
         return timeINMin,totalTime* 1.0/60.0
-    def Exit():
+    def Exit(self):
         exit()
-
-mainwindow= problem()
+try:
+    mainwindow= problem()
+except:
+    tmsg.showinfo("Exit Pop up","You have explicitly exited the Mainwindow")
+    # print("exited successfully")
+    # exit()
+    
