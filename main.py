@@ -6,6 +6,7 @@ import tkinter.messagebox as tmsg
 from PIL import Image, ImageTk
 import mysql.connector
 import datetime
+import os
 import webbrowser
 
 
@@ -18,12 +19,13 @@ class problem:
         self.root = Tk()
         self.root.title("Bus Ticketing system By Nikhil Maurya")
         self.root.geometry("1366x768")
+        self.root.config(bg="white")
 
         img = Image.open("4.jpg")
         bg = ImageTk.PhotoImage(img)
 
         # Show image using label
-        label1 = Label(self.root, image=bg,)
+        label1 = Label(self.root,image=bg)
         label1.place(x=0, y=0)
 
     # menus
@@ -47,39 +49,27 @@ class problem:
         Exit_Button.place(x=800, y=200)
 
 
-        self.getPassward("nikhil")
+        self.connect_To_DB("")
         
         
         self.root.mainloop()
 
     
-    def getPassward(self,passk):
+    def connect_To_DB(self,passk):
+        self.flag1=0
+        try:
+            file=open("pass.txt",'r')
+            passk=file.readline()
+            file.close()
+        except FileNotFoundError:
+
+            self.flag1=1
+            # pass
         try:
             self.mydb=mysql.connector.connect(host='localhost',user='root',password=passk)
             tmsg.showinfo("Logged In","Successfully logged in to your sql")
-
             self.pointer=self.mydb.cursor()
             self.pointer.execute("use passenger_details")
-            # print("yes")
-            # self.pointer.execute("show databases")
-            # s=('passenger_details',)
-            # if s not in self.pointer:
-            #     self.pointer.execute("create database passenger_details")
-            #     queryTocreateBaseTable='''create table personal(
-            #                             name varchar(20),
-            #                             Gender varchar(20),
-            #                             Mobile_no varchar(10),
-            #                             Email varchar(50),
-            #                             Addhar varchar(15)not null,
-            #                             passward varchar(15),
-            #                             state boolean,
-            #                             total_balance float,
-            #                             primary key(addhar)
-            #                             )'''
-            #     self.pointer.execute(queryTocreateBaseTable)
-            #     self.mydb.commit()
-            #     tmsg.showinfo("database created","Successfull created 'personal' table in 'passenger_details'")
-            # self.pointer.execute("use passenger_details")
         except mysql.connector.errors.ProgrammingError:
             # print("yes")
             tmsg.showerror("Unable to connect database","It seems like the passward : '{}' is not right to login to your database!".format(passk))
@@ -103,8 +93,19 @@ class problem:
             b2.place(x=170, y=130)
 
     def passward_sender(self):
+        try:
+            os.remove("pass.txt")
+        except:
+            pass
         self.frame.destroy()
-        self.getPassward(self.passward.get())
+        print(self.passward.get())
+        if self.flag1==1:
+                key=tmsg.askyesno("passward Save","Do you want to save your passward for smooth login?")
+                if key==True:
+                    file=open("pass.txt","w")
+                    file.write(self.passward.get())
+                    file.close()
+        self.connect_To_DB(self.passward.get())
         
     def entryValidation(self):
         if self.var1.get()=="" or self.var2.get()=="" or self.var3.get()=="" or self.var4.get()=="" or self.var5.get()=="" or self.var6.get() =="":
@@ -359,11 +360,20 @@ class problem:
         self.checkvar=IntVar()
 
         self.f2 = Frame(self.root, bg="light gray", height=400,
-                width=380, relief=GROOVE, border=10)
+                width=380, relief=FLAT, border=5)
         self.f2.place(x=400, y=50)
+
+        img1 = Image.open("2.jpg")
+        bg1 = ImageTk.PhotoImage(img1)
+
+        # Show image using label
+        label1 = Label(self.f2, image=bg1)
+        label1.image = bg1
+        label1.place(x=0, y=0)
+
         vcmd=(self.f2.register(self.callback))
 
-        l_1 = Label(self.f2, text="Passenger Recharge Interface ",
+        l_1 = Label(self.f2, text="Passenger login Interface ",
                     font=("Lato", 17), bg="light gray")
         l_1.place(x=30, y=30)
 
@@ -475,7 +485,13 @@ class problem:
 
         self.f3 = Frame(self.root, height=400,bg="light gray" ,width=580, relief=GROOVE, border=5)
         self.f3.place(x=400, y=50)
+        img1 = Image.open("2.jpg")
+        bg1 = ImageTk.PhotoImage(img1)
 
+        # Show image using label
+        label1 = Label(self.f3, image=bg1)
+        label1.image = bg1
+        label1.place(x=0, y=0)
 
         cross = Button(self.f3, text="X", command=self.f3.destroy)
         cross.place(x=550, y=1)
@@ -617,17 +633,24 @@ class problem:
         boardTime=self.pointer.fetchone()[0]
 
         timeINMin,moneydifference=self.moneyCal(boardTime,depTime)
-        tmsg.showinfo("Departured successfull","Dear custumer you traveled {} which costs you : {}".format(timeINMin,moneydifference))
-        
         query="select total_balance from personal where Addhar={}".format(addhar)
         self.pointer.execute(query)
         totalBalance=self.pointer.fetchone()[0]
-        totalBalance-=moneydifference
+        statement=""
+        if totalBalance<moneydifference:
+            tmsg.showerror("Insufficient balance","You don't have enough balance to use your card please submit {:.2f} cash to the conductor before departure!!".format(moneydifference))
+            statement="Insufficient balance and money paid through cash"
+        else:
+            tmsg.showinfo("Departured successfull","Dear custumer you traveled {} which costs you : {:.2f}".format(timeINMin,moneydifference))
+            totalBalance-=moneydifference
+            statement="money deduced for Travel cost"
+        
+       
         # print(totalBalance)
-        query="update {} set departure_time='{}', amount_difference={}, statement='{}',total_balance={} where TransitionId={}".format(data,depTime,moneydifference,"money deduced for Travel cost",totalBalance,transId)
+        query="update {} set departure_time='{}', amount_difference={:.2f}, statement='{}',total_balance={:.2f} where TransitionId={}".format(data,depTime,moneydifference,statement,totalBalance,transId)
         # print(query)
         self.pointer.execute(query)
-        query="update personal set total_balance ={}, state=0 where Addhar={}".format(totalBalance,addhar)
+        query="update personal set total_balance ={:.2f}, state=0 where Addhar={}".format(totalBalance,addhar)
         # print(query)
         self.pointer.execute(query)
 
@@ -642,9 +665,10 @@ class problem:
         timeINMin= str(datetime.timedelta(seconds=totalTime))
         return timeINMin,totalTime* 1.0/60.0
     def Exit(self):
-        exit()
+        self.root.destroy()
+        # exit()
 try:
     mainwindow= problem()
 except:
-    tmsg.showinfo("Exit Pop up","You have explicitly exited the Mainwindow")
+    tmsg.showinfo("Exit Pop up","please let me know how did you get that probel trigger ??")
     
