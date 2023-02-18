@@ -35,6 +35,7 @@ class problem:
         mainmenu.add_command(label="Recharge", font=("BOLD", 15), command=lambda : self.login(1))
         mainmenu.add_command(label="De-Activation", font=("BOLD", 15), command=lambda : self.login(2))
         mainmenu.add_command(label="Get Records ", font=("BOLD", 15), command=lambda : self.login(3))
+        mainmenu.add_command(label="Get QR ", font=("BOLD", 15), command=lambda : self.login(4))
         mainmenu.add_command(label="Contact Us", font=("BOLD", 15), command=self.Contact)
         mainmenu.add_command(label="About", font=("BOLD", 15), command=self.About)
         mainmenu.add_command(label="Exit", font=("BOLD", 15), command=self.Exit)
@@ -187,6 +188,7 @@ class problem:
         
         if  self.entryValidation():
             return
+        self.f1.destroy()
         string=str(self.var1.get()+self.var5.get())
         string=string.replace(" ","")
         self.user_qrcode = qrcode.make(string)
@@ -197,7 +199,6 @@ class problem:
             "Image Creation", f"{self.var1.get()}, you Have succesfull registered to E- Bus Here is your scanner ")
         img2 = Image. open(string+"qrcode.png")
         img2. show()
-        self.f1.destroy()
 
 
     def submitTODB(self,string):
@@ -483,7 +484,29 @@ class problem:
                 self.Recharge()
             elif value==2:
                 self.Deactivation()
-            elif value==3:self.printRecord()
+            elif value==3:
+                self.printRecord()
+            elif value==4:
+                self.QRGenerator()
+    def QRGenerator(self):
+        # pass
+        query="select name from personal where Addhar={}".format(self.var7.get())
+        # print(query)
+        self.pointer.execute(query)
+        name=self.pointer.fetchone()
+        name=name[0]
+        char=name.replace(" ","")
+        string=char+self.var7.get()
+
+        self.user_qrcode = qrcode.make(string)
+        self.user_qrcode.save(string+"qrcode.png")
+
+
+        msg = tmsg.showinfo(
+            "Image Creation", f"{name}, This is your E- Bus  scanner ")
+        img2 = Image. open(string+"qrcode.png")
+        img2. show()
+
 
     def checkAll(self):
         # print(self.checkvar.get())
