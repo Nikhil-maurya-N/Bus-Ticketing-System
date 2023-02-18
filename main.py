@@ -1,4 +1,5 @@
 import cv2
+from fpdf import FPDF
 import qrcode
 from tkinter import *
 from tkinter import messagebox
@@ -32,9 +33,10 @@ class problem:
         mainmenu = Menu(self.root)
         mainmenu.add_command(label="New Passenger...", font=("BOLD", 15), command=self.New_passenger)
         mainmenu.add_command(label="Recharge", font=("BOLD", 15), command=lambda : self.login(1))
-        mainmenu.add_command(label="About", font=("BOLD", 15), command=self.About)
-        mainmenu.add_command(label="Contact Us", font=("BOLD", 15), command=self.Contact)
         mainmenu.add_command(label="De-Activation", font=("BOLD", 15), command=lambda : self.login(2))
+        mainmenu.add_command(label="Get Records ", font=("BOLD", 15), command=lambda : self.login(3))
+        mainmenu.add_command(label="Contact Us", font=("BOLD", 15), command=self.Contact)
+        mainmenu.add_command(label="About", font=("BOLD", 15), command=self.About)
         mainmenu.add_command(label="Exit", font=("BOLD", 15), command=self.Exit)
         self.root.config(menu=mainmenu)
 
@@ -433,12 +435,55 @@ class problem:
             return True
         else:
             return False
+        
+    def printRecord(self):
+        query="select name from personal where Addhar={}".format(self.var7.get())
+        # print(query)
+        self.pointer.execute(query)
+        name=self.pointer.fetchone()
+        name=name[0]
+        name=name.replace(" ","")
+        tableName=name+self.var7.get()
+
+        query="Select * from {}".format(tableName)
+        self.pointer.execute(query)
+        balance=self.pointer.fetchall()
+        hle=balance
+
+        name=self.pointer.column_names
+        pdf = FPDF()
+
+        # Add a page
+        pdf.add_page()
+
+        space=[20,25,25,20,40,10]
+        pdf.set_font("Arial",style='b',size=10)
+        row=" "
+        for k,i in enumerate(name):
+            row+="{:<{}}".format(str(i).capitalize(),space[k])
+        # print(row)
+        pdf.cell(187, 10, txt =row,
+                    ln = 1, align = 'C')
+        pdf.set_font("Arial", size = 10)
+        for i,num in enumerate(hle):
+            row=""
+            for k,j in enumerate(num):
+                row+="{:<{}}".format(str(j),space[k])
+                
+            pdf.cell(180, 10, txt =row,
+                    ln = i+2, align = 'C')
+        pdf.output("{}.pdf".format(tableName))
+        var=tmsg.askyesno("Successfull operation","Your record has been fetched and saved to this folder do you want to open it?")
+        if var==True:
+            webbrowser.open_new_tab("{}.pdf".format(tableName))
+
     def check_validity(self,value):
         if self.checkAll()==True:
             if value==1:
                 self.Recharge()
             elif value==2:
                 self.Deactivation()
+            elif value==3:self.printRecord()
 
     def checkAll(self):
         # print(self.checkvar.get())
@@ -530,7 +575,7 @@ class problem:
         name=name[0]
         name=name.replace(" ","")
         tableName=name+self.var7.get()
-        query="insert into {}(board_time,amount_difference,statement,total_balance) values( '{}','{}','{}','{}') ".format(tableName,datetime.datetime.now(),self.var9.get(),"Recharged via client portal",total)
+        query="insert into {}(board_time,departure_time,amount_difference,statement,total_balance) values( '{}','{}','{}','{}','{}') ".format(tableName,datetime.datetime.now(),datetime.datetime.now(),self.var9.get(),"Recharged via client portal",total)
         # print(query)
         self.pointer.execute(query)
         self.mydb.commit()
@@ -670,5 +715,5 @@ class problem:
 try:
     mainwindow= problem()
 except:
-    tmsg.showinfo("Exit Pop up","please let me know how did you get that probel trigger ??")
+    tmsg.showinfo("Exit Pop up","please let me know how did you get that problem trigger ??")
     
