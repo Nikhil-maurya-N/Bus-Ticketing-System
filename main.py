@@ -101,7 +101,7 @@ class problem:
         except:
             pass
         self.frame.destroy()
-        print(self.passward.get())
+        # print(self.passward.get())
         if self.flag1==1:
                 key=tmsg.askyesno("passward Save","Do you want to save your passward for smooth login?")
                 if key==True:
