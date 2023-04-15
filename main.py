@@ -731,7 +731,7 @@ class problem:
         depTime=int(round(depTime.timestamp()))
         totalTime=depTime-boardTime
         timeINMin= str(datetime.timedelta(seconds=totalTime))
-        return timeINMin,totalTime* 1.0/60.0
+        return timeINMin,totalTime* 1.0/60.0   
     def Exit(self):
         self.root.destroy()
         # exit()
